@@ -1,9 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from '@/components/Navbar'
 
 export default function NewPost() {

@@ -29,6 +29,14 @@ vi.mock('@prisma/client', () => {
 describe('Prisma Client Initialization', () => {
   const originalEnv = process.env.NODE_ENV
 
+  const setNodeEnv = (value: string) => {
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value,
+      writable: true,
+      configurable: true,
+    })
+  }
+
   beforeEach(() => {
     // Clear module cache before each test
     vi.resetModules()
@@ -38,7 +46,7 @@ describe('Prisma Client Initialization', () => {
   })
 
   afterEach(() => {
-    process.env.NODE_ENV = originalEnv
+    setNodeEnv(originalEnv as string)
   })
 
   test('should export a prisma client instance', async () => {
@@ -55,7 +63,7 @@ describe('Prisma Client Initialization', () => {
   })
 
   test('should reuse existing PrismaClient instance in development mode', async () => {
-    process.env.NODE_ENV = 'development'
+    setNodeEnv('development')
     
     // First import
     const { prisma: prisma1 } = await import('@/lib/prisma')
@@ -71,7 +79,7 @@ describe('Prisma Client Initialization', () => {
   })
 
   test('should store prisma instance in global in non-production', async () => {
-    process.env.NODE_ENV = 'development'
+    setNodeEnv('development')
     
     await import('@/lib/prisma')
     
@@ -80,7 +88,7 @@ describe('Prisma Client Initialization', () => {
   })
 
   test('should not store prisma instance in global in production', async () => {
-    process.env.NODE_ENV = 'production'
+    setNodeEnv('production')
     
     const globalForPrisma = globalThis as unknown as { prisma: any }
     delete globalForPrisma.prisma
