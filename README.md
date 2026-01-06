@@ -69,6 +69,11 @@ npm run dev
 - `npm run db:push` - Push schema to database
 - `npm run db:generate` - Generate Prisma client
 - `npm run db:studio` - Open Prisma Studio
+- `npm run test:e2e` - Run Playwright E2E tests
+- `npm run test:e2e:ui` - Run E2E tests with interactive UI
+- `npm run test:e2e:headed` - Run E2E tests in headed mode
+- `npm run test:e2e:codegen` - Open Playwright Codegen for recording tests
+- `npm run test:e2e:report` - Open Playwright HTML report
 
 ## CI/CD Pipeline
 
@@ -86,17 +91,24 @@ This project uses **GitHub Actions** for Continuous Integration. Every push or p
 - Generates coverage reports
 - Uploads coverage artifacts
 
-### 3. TypeScript Type Check
+### 3. E2E Tests (Playwright)
+
+- Runs end-to-end browser tests
+- Tests user flows: registration, login, posts, comments
+- Uses record-and-play approach
+- Generates HTML reports with screenshots and traces
+
+### 4. TypeScript Type Check
 
 - Validates type correctness
 - Catches type errors before runtime
 
-### 4. Build Verification
+### 5. Build Verification
 
 - Ensures the application builds successfully
-- Runs after lint and test jobs pass
+- Runs after lint, test, and e2e jobs pass
 
-### 5. Code Quality Analysis (SonarCloud)
+### 6. Code Quality Analysis (SonarCloud)
 
 - Detects code smells
 - Finds duplicated code
