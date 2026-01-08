@@ -16,6 +16,10 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:codegen": "playwright codegen http://localhost:3000",
     "test:e2e:report": "playwright show-report",
+    "test:cucumber": "cucumber-js",
+    "test:cucumber:ci": "start-server-and-test start http://localhost:3000 test:cucumber",
+    "test:cucumber:report": "open cucumber-report/cucumber-report.html",
+    "test:cucumber:tags": "cucumber-js --tags",
     "typecheck": "tsc --noEmit",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
@@ -30,6 +34,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^11.2.0",
     "@playwright/test": "^1.57.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.12.12",
@@ -39,10 +44,14 @@
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.3",
+    "playwright": "^1.57.0",
     "postcss": "^8.4.38",
     "prisma": "^5.14.0",
+    "start-server-and-test": "^2.1.3",
     "tailwindcss": "^3.4.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.0",
+    "wait-on": "^8.0.3"
   }
 }

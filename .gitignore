@@ -9,6 +9,8 @@
 /playwright-report/
 /test-results/
 /blob-report/
+/cucumber-report/
+/dist-features/
 playwright/.cache/
 
 # next.js
