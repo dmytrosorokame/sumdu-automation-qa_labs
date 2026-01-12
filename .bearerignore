@@ -1,0 +1,31 @@
+# Bearer ignore file
+# Exclude test files and test-related code
+**/__tests__/**
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+vitest.setup.ts
+vitest.config.*
+playwright.config.ts
+cucumber.js
+
+# Exclude node_modules and build artifacts
+node_modules/**
+.next/**
+dist/**
+coverage/**
+test-results/**
+playwright-report/**
+cucumber-report/**
+
+# Exclude configuration files
+*.config.js
+*.config.ts
+*.config.mts
+
+# Exclude database files
+*.db
+*.db-journal
+*.sqlite
+

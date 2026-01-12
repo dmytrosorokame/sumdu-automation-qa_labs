@@ -286,11 +286,27 @@ jobs:
 
       # Tool 3: Bearer CLI - SAST with data flow analysis
       - name: 🛡️ Run Bearer CLI Security Scan
+        id: bearer-scan
         uses: bearer/bearer-action@v2
         with:
           path: src/
           format: json
+          diff: false
+          hide-progress-bar: true
         continue-on-error: true
+        env:
+          BEARER_IGNORE_FILE: .bearerignore
+
+      - name: 📋 Display Bearer Scan Results
+        if: always()
+        run: |
+          if [ "${{ steps.bearer-scan.outputs.exit_code }}" != "0" ]; then
+            echo "⚠️ Bearer found security issues. Review the output above for details."
+            echo "Rule breaches:"
+            echo "${{ steps.bearer-scan.outputs.rule_breaches }}"
+          else
+            echo "✅ Bearer scan completed successfully - no critical issues found"
+          fi
 
       - name: 📊 Security Scan Summary
         run: |
