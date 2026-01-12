@@ -289,22 +289,7 @@ jobs:
         uses: bearer/bearer-action@v2
         with:
           path: src/
-          format: text
-        continue-on-error: true
-
-      # Tool 4: ESLint Security Plugin
-      - name: 🔏 Run ESLint Security Rules
-        run: |
-          npm install --save-dev eslint-plugin-security
-          npx eslint --plugin security \
-            --rule 'security/detect-eval-with-expression: error' \
-            --rule 'security/detect-non-literal-regexp: warn' \
-            --rule 'security/detect-object-injection: warn' \
-            --rule 'security/detect-unsafe-regex: error' \
-            --rule 'security/detect-buffer-noassert: error' \
-            --rule 'security/detect-child-process: warn' \
-            --rule 'security/detect-possible-timing-attacks: warn' \
-            src/
+          format: json
         continue-on-error: true
 
       - name: 📊 Security Scan Summary
@@ -315,6 +300,8 @@ jobs:
           echo "  1. Semgrep (SAST) - JavaScript/TypeScript security patterns"
           echo "  2. npm audit (SCA) - Dependency vulnerability scanning"
           echo "  3. Bearer CLI (SAST) - Data flow security analysis"
-          echo "  4. ESLint Security Plugin - Code security rules"
+          echo ""
+          echo "Note: ESLint security rules are configured in .eslintrc.json and"
+          echo "      are automatically checked during the 'lint' job."
           echo ""
           echo "Check the logs above for detailed findings."
