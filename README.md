@@ -77,43 +77,33 @@ npm run dev
 
 ## CI/CD Pipeline
 
-This project uses **GitHub Actions** for Continuous Integration. Every push or pull request triggers:
+This project uses **GitHub Actions** for Continuous Integration with a **three-tier architecture**:
 
-### 1. Code Style Analysis (ESLint)
+### 🔍 GROUP 1: LINTERS - Static Code Analysis
 
-- Checks code for style violations
-- Enforces consistent code formatting
-- Detects potential issues early
+**Purpose**: Catch syntax and style issues early
 
-### 2. Unit & Integration Tests (Vitest)
+- **ESLint** - JavaScript/TypeScript code style and security rules
+- **TypeScript Type Check** - Type safety validation
 
-- Runs all test suites
-- Generates coverage reports
-- Uploads coverage artifacts
+### 🧪 GROUP 2: TESTS - Comprehensive Testing
 
-### 3. E2E Tests (Playwright)
+**Purpose**: Verify functionality and behavior
 
-- Runs end-to-end browser tests
-- Tests user flows: registration, login, posts, comments
-- Uses record-and-play approach
-- Generates HTML reports with screenshots and traces
+- **Unit Tests (Vitest)** - Component and function testing with coverage
+- **E2E Tests (Playwright)** - End-to-end browser automation
+- **Cucumber BDD Tests** - Behavior-driven development scenarios
 
-### 4. TypeScript Type Check
+### 🔒 GROUP 3: SECURITY & QUALITY - Analysis & Compliance
 
-- Validates type correctness
-- Catches type errors before runtime
+**Purpose**: Ensure code quality and security standards
 
-### 5. Build Verification
-
-- Ensures the application builds successfully
-- Runs after lint, test, and e2e jobs pass
-
-### 6. Code Quality Analysis (SonarCloud)
-
-- Detects code smells
-- Finds duplicated code
-- Identifies potential bugs
-- Measures technical debt
+- **Security Analysis (SAST/SCA)**
+  - Semgrep - Pattern-based security scanning
+  - npm audit - Dependency vulnerability checking
+  - Trivy - Comprehensive security scanner
+- **SonarCloud** - Code quality metrics and technical debt
+- **Build Verification** - Final production build check
 
 ## Setting Up CI for Your Fork
 
