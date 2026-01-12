@@ -7,8 +7,26 @@ import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest'
 
 // Mock PrismaClient before importing
 vi.mock('@prisma/client', () => {
+  // Define the mock instance type
+  interface MockPrismaInstance {
+    user: {
+      findUnique: ReturnType<typeof vi.fn>
+      findFirst: ReturnType<typeof vi.fn>
+      create: ReturnType<typeof vi.fn>
+      update: ReturnType<typeof vi.fn>
+    }
+    post: {
+      findMany: ReturnType<typeof vi.fn>
+      findUnique: ReturnType<typeof vi.fn>
+      create: ReturnType<typeof vi.fn>
+    }
+    comment: {
+      create: ReturnType<typeof vi.fn>
+    }
+  }
+  
   // Use vi.fn with a function (not arrow function) to create a spyable constructor
-  const MockPrismaClient = vi.fn(function MockPrismaClient() {
+  const MockPrismaClient = vi.fn(function MockPrismaClient(this: MockPrismaInstance) {
     // 'this' refers to the instance when called with 'new'
     this.user = {
       findUnique: vi.fn(),
