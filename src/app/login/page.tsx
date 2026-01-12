@@ -25,8 +25,7 @@ function LoginForm() {
       newErrors.username = "The username is required and cannot be empty";
     }
     if (!formData.password) {
-      // This is a validation error message, not a hardcoded secret
-      newErrors.password = "The Password is required and cannot be empty"; // bearer:disable javascript_lang_hardcoded_secret
+      newErrors.password = "The Password is required and cannot be empty";
     }
 
     setErrors(newErrors);

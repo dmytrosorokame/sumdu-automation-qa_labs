@@ -29,17 +29,14 @@ export default function Register() {
       newErrors.email = "The email address is not valid";
     }
     if (!formData.password) {
-      // This is a validation error message, not a hardcoded secret
-      newErrors.confirmPassword = // bearer:disable javascript_lang_hardcoded_secret
+      newErrors.confirmPassword =
         "The password and its confirm are not the same";
     }
     if (!formData.confirmPassword) {
-      // This is a validation error message, not a hardcoded secret
-      newErrors.confirmPassword = // bearer:disable javascript_lang_hardcoded_secret
+      newErrors.confirmPassword =
         "The confirm password is required and cannot be empty";
     } else if (formData.password !== formData.confirmPassword) {
-      // This is a validation error message, not a hardcoded secret
-      newErrors.confirmPassword = // bearer:disable javascript_lang_hardcoded_secret
+      newErrors.confirmPassword =
         "The password and its confirm are not the same";
     }
 

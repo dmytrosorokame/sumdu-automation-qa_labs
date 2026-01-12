@@ -43,7 +43,6 @@ function ResetPasswordForm() {
     // comparison against stored secrets, so timing attacks are not a concern here
     // eslint-disable-next-line security/detect-possible-timing-attacks
     if (password !== confirmPassword) {
-      // bearer:disable javascript_lang_observable_timing
       setError("Passwords do not match");
       return;
     }
@@ -72,9 +71,7 @@ function ResetPasswordForm() {
     }
   };
 
-  // This is a UI state check, not a security-sensitive token comparison
   if (validToken === false) {
-    // bearer:disable javascript_lang_observable_timing
     return (
       <div className="card w-full max-w-md text-center">
         <h1 className="text-2xl font-bold mb-4">Reset Password</h1>

@@ -284,29 +284,29 @@ jobs:
         run: npm audit --audit-level=high
         continue-on-error: true
 
-      # Tool 3: Bearer CLI - SAST with data flow analysis
-      - name: 🛡️ Run Bearer CLI Security Scan
-        id: bearer-scan
-        uses: bearer/bearer-action@v2
+      # Tool 3: Trivy - Comprehensive security scanner
+      - name: 🛡️ Run Trivy Security Scan
+        uses: aquasecurity/trivy-action@master
         with:
-          path: src/
-          format: json
-          diff: false
-          hide-progress-bar: true
+          scan-type: "fs"
+          scan-ref: "."
+          format: "sarif"
+          output: "trivy-results.sarif"
+          severity: "CRITICAL,HIGH,MEDIUM"
         continue-on-error: true
-        env:
-          BEARER_IGNORE_FILE: .bearerignore
 
-      - name: 📋 Display Bearer Scan Results
+      - name: 📊 Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: "trivy-results.sarif"
+        continue-on-error: true
+
+      - name: 📋 Display Trivy Scan Summary
         if: always()
         run: |
-          if [ "${{ steps.bearer-scan.outputs.exit_code }}" != "0" ]; then
-            echo "⚠️ Bearer found security issues. Review the output above for details."
-            echo "Rule breaches:"
-            echo "${{ steps.bearer-scan.outputs.rule_breaches }}"
-          else
-            echo "✅ Bearer scan completed successfully - no critical issues found"
-          fi
+          echo "✅ Trivy security scan completed"
+          echo "Results uploaded to GitHub Security tab"
 
       - name: 📊 Security Scan Summary
         run: |
@@ -315,9 +315,9 @@ jobs:
           echo "Tools executed:"
           echo "  1. Semgrep (SAST) - JavaScript/TypeScript security patterns"
           echo "  2. npm audit (SCA) - Dependency vulnerability scanning"
-          echo "  3. Bearer CLI (SAST) - Data flow security analysis"
+          echo "  3. Trivy (SAST/SCA) - Comprehensive security scanning"
           echo ""
           echo "Note: ESLint security rules are configured in .eslintrc.json and"
           echo "      are automatically checked during the 'lint' job."
           echo ""
-          echo "Check the logs above for detailed findings."
+          echo "Check the logs above and GitHub Security tab for detailed findings."
