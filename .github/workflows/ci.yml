@@ -253,6 +253,10 @@ jobs:
   security:
     name: 🔒 Security Analysis (SAST/SCA)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
 
     steps:
       - name: 📥 Checkout repository
