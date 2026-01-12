@@ -29,20 +29,17 @@ export default function Register() {
       newErrors.email = "The email address is not valid";
     }
     if (!formData.password) {
-      // bearer:disable-next-line javascript_lang_hardcoded_secret
       // This is a validation error message, not a hardcoded secret
-      newErrors.confirmPassword =
+      newErrors.confirmPassword = // bearer:disable javascript_lang_hardcoded_secret
         "The password and its confirm are not the same";
     }
     if (!formData.confirmPassword) {
-      // bearer:disable-next-line javascript_lang_hardcoded_secret
       // This is a validation error message, not a hardcoded secret
-      newErrors.confirmPassword =
+      newErrors.confirmPassword = // bearer:disable javascript_lang_hardcoded_secret
         "The confirm password is required and cannot be empty";
     } else if (formData.password !== formData.confirmPassword) {
-      // bearer:disable-next-line javascript_lang_hardcoded_secret
       // This is a validation error message, not a hardcoded secret
-      newErrors.confirmPassword =
+      newErrors.confirmPassword = // bearer:disable javascript_lang_hardcoded_secret
         "The password and its confirm are not the same";
     }
 
