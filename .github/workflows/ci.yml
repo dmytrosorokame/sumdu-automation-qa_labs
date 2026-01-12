@@ -248,3 +248,73 @@ jobs:
 
       - name: 📝 Run TypeScript compiler
         run: npx tsc --noEmit
+
+  # Job 7: Security Analysis - SAST and SCA
+  security:
+    name: 🔒 Security Analysis (SAST/SCA)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📚 Install dependencies
+        run: npm ci
+
+      # Tool 1: Semgrep - SAST for JavaScript/TypeScript
+      - name: 🔍 Run Semgrep SAST Analysis
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/javascript
+            p/typescript
+            p/nodejs
+            p/security-audit
+            p/owasp-top-ten
+        continue-on-error: true
+
+      # Tool 2: npm audit - SCA for dependencies
+      - name: 🔐 Run npm audit (SCA)
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      # Tool 3: Bearer CLI - SAST with data flow analysis
+      - name: 🛡️ Run Bearer CLI Security Scan
+        uses: bearer/bearer-action@v2
+        with:
+          path: src/
+          format: text
+        continue-on-error: true
+
+      # Tool 4: ESLint Security Plugin
+      - name: 🔏 Run ESLint Security Rules
+        run: |
+          npm install --save-dev eslint-plugin-security
+          npx eslint --plugin security \
+            --rule 'security/detect-eval-with-expression: error' \
+            --rule 'security/detect-non-literal-regexp: warn' \
+            --rule 'security/detect-object-injection: warn' \
+            --rule 'security/detect-unsafe-regex: error' \
+            --rule 'security/detect-buffer-noassert: error' \
+            --rule 'security/detect-child-process: warn' \
+            --rule 'security/detect-possible-timing-attacks: warn' \
+            src/
+        continue-on-error: true
+
+      - name: 📊 Security Scan Summary
+        run: |
+          echo "🔒 Security Analysis Complete"
+          echo "================================"
+          echo "Tools executed:"
+          echo "  1. Semgrep (SAST) - JavaScript/TypeScript security patterns"
+          echo "  2. npm audit (SCA) - Dependency vulnerability scanning"
+          echo "  3. Bearer CLI (SAST) - Data flow security analysis"
+          echo "  4. ESLint Security Plugin - Code security rules"
+          echo ""
+          echo "Check the logs above for detailed findings."

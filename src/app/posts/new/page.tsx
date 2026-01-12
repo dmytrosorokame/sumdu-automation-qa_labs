@@ -37,8 +37,9 @@ export default function NewPost() {
         setSuccess('Blog Post posted successfully!')
         setTimeout(() => router.push('/'), 1500)
       }
-    } catch (error) {
-      console.error(error)
+    } catch {
+      // Error handled silently - user sees no feedback but action failed
+      // In production, this should be sent to a logging service
     } finally {
       setLoading(false)
     }

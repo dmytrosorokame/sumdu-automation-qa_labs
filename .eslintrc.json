@@ -1,5 +1,6 @@
 {
   "extends": ["next/core-web-vitals"],
+  "plugins": ["security"],
   "rules": {
     "no-unused-vars": "warn",
     "no-console": "warn",
@@ -7,7 +8,14 @@
     "no-var": "error",
     "eqeqeq": ["error", "always"],
     "no-duplicate-imports": "error",
-    "no-unreachable": "error"
+    "no-unreachable": "error",
+    "security/detect-eval-with-expression": "error",
+    "security/detect-non-literal-regexp": "warn",
+    "security/detect-object-injection": "warn",
+    "security/detect-unsafe-regex": "error",
+    "security/detect-buffer-noassert": "error",
+    "security/detect-child-process": "warn",
+    "security/detect-possible-timing-attacks": "warn"
   },
   "ignorePatterns": ["node_modules/", ".next/", "coverage/", "prisma/"]
 }

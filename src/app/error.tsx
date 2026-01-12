@@ -10,7 +10,11 @@ export default function Error({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error(error)
+    // Log only error digest (safe identifier) to avoid leaking sensitive information
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.error('Error occurred:', error.digest || 'Unknown error')
+    }
   }, [error])
 
   return (

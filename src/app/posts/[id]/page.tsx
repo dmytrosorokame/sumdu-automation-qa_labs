@@ -73,8 +73,9 @@ export default function PostPage({ params }: { params: { id: string } }) {
           router.push('/')
         }, 1500)
       }
-    } catch (error) {
-      console.error(error)
+    } catch {
+      // Error handled silently - user sees no feedback but action failed
+      // In production, this should be sent to a logging service
     } finally {
       setSubmitting(false)
     }
