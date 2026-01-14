@@ -1,0 +1,591 @@
+{
+  "info": {
+    "name": "SumDU Blog API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const existing = pm.environment.get('uniqueSuffix');",
+          "const suffix = existing || Date.now().toString();",
+          "if (!existing) {",
+          "  pm.environment.set('uniqueSuffix', suffix);",
+          "}",
+          "pm.environment.set('username', `user_${suffix}`);",
+          "pm.environment.set('email', `user_${suffix}@example.com`);",
+          "pm.environment.set('password', `Passw0rd!${suffix}`);",
+          "pm.environment.set('newPassword', `NewPassw0rd!${suffix}`);"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Unauthorized - Profile",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.cookies.clear();"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 401 when unauthorized', () => {",
+              "  pm.response.to.have.status(401);",
+              "});",
+              "pm.test('error message', () => {",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.error).to.eql('Unauthorized');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/profile",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "profile"]
+        }
+      }
+    },
+    {
+      "name": "Unauthorized - Create Post",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.cookies.clear();"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 401 when unauthorized', () => {",
+              "  pm.response.to.have.status(401);",
+              "});",
+              "pm.test('error message', () => {",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.error).to.eql('Unauthorized');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Unauthorized post\",\n  \"description\": \"Should fail\",\n  \"body\": \"Should fail\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/posts",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "posts"]
+        }
+      }
+    },
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{username}}\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "register"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('registers user or returns 400 if exists', () => {",
+              "  pm.expect([200, 400]).to.include(pm.response.code);",
+              "});",
+              "if (pm.response.code === 200) {",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.message).to.eql('Registration successful');",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth - Get CSRF",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/csrf",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "csrf"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('csrf token returned', () => {",
+              "  pm.response.to.have.status(200);",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.csrfToken).to.be.a('string');",
+              "  pm.environment.set('csrfToken', data.csrfToken);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth - Login (credentials)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "csrfToken", "value": "{{csrfToken}}" },
+            { "key": "username", "value": "{{username}}" },
+            { "key": "password", "value": "{{password}}" },
+            { "key": "callbackUrl", "value": "{{baseUrl}}/" },
+            { "key": "json", "value": "true" }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/callback/credentials",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "callback", "credentials"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('login returns 200 or 302', () => {",
+              "  pm.expect([200, 302]).to.include(pm.response.code);",
+              "});",
+              "if (pm.response.code === 200) {",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.url || '').to.contain('/');",
+              "}",
+              "pm.test('session cookie set', () => {",
+              "  const cookies = pm.cookies.toObject();",
+              "  const hasSession = cookies['next-auth.session-token'] || cookies['__Secure-next-auth.session-token'];",
+              "  pm.expect(Boolean(hasSession)).to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth - Session",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/session",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "session"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('session has user', () => {",
+              "  pm.response.to.have.status(200);",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.user).to.be.ok;",
+              "  pm.expect(data.user.username).to.eql(pm.environment.get('username'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile - Get",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/profile",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "profile"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('profile returned', () => {",
+              "  pm.response.to.have.status(200);",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.username).to.eql(pm.environment.get('username'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"age\": 25,\n  \"gender\": \"male\",\n  \"address\": \"Sumy\",\n  \"website\": \"https://example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/profile",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "profile"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('profile updated', () => {",
+              "  pm.response.to.have.status(200);",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.message).to.eql('Profile updated successfully!');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Posts - List",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/posts",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "posts"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns posts array', () => {",
+              "  pm.response.to.have.status(200);",
+              "  const data = pm.response.json();",
+              "  pm.expect(data).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Posts - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Test post {{uniqueSuffix}}\",\n  \"description\": \"Created via Postman\",\n  \"body\": \"Post body content\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/posts",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "posts"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('post created', () => {",
+              "  pm.response.to.have.status(200);",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.message).to.eql('Blog Post posted successfully!');",
+              "  pm.expect(data.post.id).to.be.a('string');",
+              "  pm.environment.set('postId', data.post.id);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Posts - Get by id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/posts/{{postId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "posts", "{{postId}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('post returned', () => {",
+              "  pm.response.to.have.status(200);",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.id).to.eql(pm.environment.get('postId'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comments - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Commenter\",\n  \"message\": \"Nice post!\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/posts/{{postId}}/comments",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "posts", "{{postId}}", "comments"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('comment created', () => {",
+              "  pm.response.to.have.status(200);",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.message).to.eql('Comment added to the Post successfully!');",
+              "  pm.expect(data.comment.id).to.be.a('string');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Forgot Password - Request",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/forgot-password",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "forgot-password"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('reset token returned', () => {",
+              "  pm.response.to.have.status(200);",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.token).to.be.a('string');",
+              "  pm.environment.set('resetToken', data.token);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Forgot Password - Validate Token",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/reset-password?token={{resetToken}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "reset-password"],
+          "query": [
+            { "key": "token", "value": "{{resetToken}}" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('token valid', () => {",
+              "  pm.response.to.have.status(200);",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.valid).to.eql(true);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Forgot Password - Reset",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"token\": \"{{resetToken}}\",\n  \"password\": \"{{newPassword}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/reset-password",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "reset-password"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('password reset', () => {",
+              "  pm.response.to.have.status(200);",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.message).to.eql('Password has been reset successfully.');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth - Get CSRF (new password)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/csrf",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "csrf"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('csrf token returned', () => {",
+              "  pm.response.to.have.status(200);",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.csrfToken).to.be.a('string');",
+              "  pm.environment.set('csrfToken', data.csrfToken);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth - Login (new password)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "csrfToken", "value": "{{csrfToken}}" },
+            { "key": "username", "value": "{{username}}" },
+            { "key": "password", "value": "{{newPassword}}" },
+            { "key": "callbackUrl", "value": "{{baseUrl}}/" },
+            { "key": "json", "value": "true" }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/callback/credentials",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "callback", "credentials"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('login with new password returns 200 or 302', () => {",
+              "  pm.expect([200, 302]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
