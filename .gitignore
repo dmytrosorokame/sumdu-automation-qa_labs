@@ -46,3 +46,9 @@ next-env.d.ts
 
 # vscode
 .vscode
+
+# temporary files
+tmp/
+
+# dast results
+docs/dast-results/*
